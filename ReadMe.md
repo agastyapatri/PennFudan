@@ -1,5 +1,10 @@
-# YOLO Object Detection
-_This project is an implementation of the YOLO Object Detection System proposed by Redmon et al. in [1]_
+# **Object Detection on PASCAL-VOC**
+_This project is an implementation of the three main Object Detection paradigms:_
+    * _R-CNN_ 
+    * _Single Shot Multibox Detectors_
+    * _YOLO_ 
+
+## **Introduction**
 
 
 
