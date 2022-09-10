@@ -7,7 +7,7 @@ import numpy as np
 torch.manual_seed(0)
 
 
-class RCNN(nn.Module):
+class FRCNN(nn.Module):
     pass
 
 class YOLO(nn.Module):
