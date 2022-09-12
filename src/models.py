@@ -7,12 +7,4 @@ import numpy as np
 torch.manual_seed(0)
 
 
-class FRCNN(nn.Module):
-    pass
-
-class YOLO(nn.Module):
-    pass 
-
-class SSD(nn.Module):
-    pass 
-
+model = torch.hub.load("ultralytics/yolov5", "yolov5s")
