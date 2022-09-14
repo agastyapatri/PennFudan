@@ -21,8 +21,49 @@ class YOLOv1(nn.Module):
         
         # loading the configurations of YOLOv1 
         self.config = configparser.ConfigParser()
-        self.config.sections()
-        self.config = self.config.read(self.PATH + "yolov1.cfg")
+        self.config.read(self.PATH)
+
+    def configurations(self):
+        """
+        Method to load and sort the configuratoins in self.config
+        """
+        conv_configs = []
+        gen_configs = []
+        fc_configs = []
+        
+        for sect in self.config.sections():
+            items = self.config.items(sect)
+            if len(items) == 2 or len(items) == 6: 
+                conv_configs.append(( sect, items) )
+
+            else:
+                gen_configs.append((sect, items))
+
+
+
+        return gen_configs
+        
+
+    def create_layers(self):
+        """Method to create convolutional layers from the configs"""
+        pass 
+
+
+    def network(self):
+        """
+        Method to actually define the YOLO network.
+        """
+        pass
+
+
+
+
+        
+
+
+        
+
+        
         
 
 
@@ -34,9 +75,11 @@ if __name__ == "__main__":
     """
     Redmon et al. configs
     """
-    PATH = "/home/agastya123/PycharmProjects/ComputerVision/ChessPieces/figures-results/"
+    PATH = "/home/agastya123/PycharmProjects/ComputerVision/ChessPieces/figures-results/yolov1.cfg"
 
     model = YOLOv1(config_path = PATH, in_channels=3, split_size=7, num_boxes=2, num_classes=20)
+    
+    print(model.configurations())
     
 
 
