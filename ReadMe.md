@@ -1,5 +1,6 @@
-# **Object Detection on the Chess Pieces Dataset**
+# **Object Detection**
 _This project is an implementation of the key ideas that enable Object Detection. There are a few standard algorithms which will be tested. I've started this endeavour as an Object Detection counterpart to the purpose that the  MNIST Image Classification task serves. Any further experimentation with object detection algorithms will be done here._
+
 
 ## **Introduction**
 I will be focusing on the implementation of the members of the families of three main Object Detection Algorithms:
@@ -29,7 +30,6 @@ To be edited in proper citation etiquette.
 [1] YOLOv3 paper, Redmon et al.
 
 [2] Single Shot Multibox Detector Paper, Liu et al
-
 [3] Faster R-CNN paper, 
 
 1. https://blog.roboflow.com/object-detection/#computer-vision-workflow
