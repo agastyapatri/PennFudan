@@ -25,23 +25,24 @@ class YOLOv1(nn.Module):
 
     def configurations(self):
         """
-        Method to load and sort the configuratoins in self.config
+        Method to load and sort the configuratins in self.config
         """
-        conv_configs = []
-        gen_configs = []
-        fc_configs = []
+        conv_config = []
+        pool_config = [] 
+        gen_config = []
+        fc_config = []
         
         for sect in self.config.sections():
-            items = self.config.items(sect)
-            if len(items) == 2 or len(items) == 6: 
-                conv_configs.append(( sect, items) )
+            if len(self.config.options(sect)) == 6: 
+                conv_config.append((sect, self.config.options(sect)))
+            elif len(self.config.options(sect)) == 2:
+                pool_config.append((sect, self.config.options(sect)))
+            else: 
+                gen_config.append((sect, self.config.options(sect)))
 
-            else:
-                gen_configs.append((sect, items))
+        return gen_config
 
 
-
-        return gen_configs
         
 
     def create_layers(self):
@@ -75,11 +76,19 @@ if __name__ == "__main__":
     """
     Redmon et al. configs
     """
-    PATH = "/home/agastya123/PycharmProjects/ComputerVision/ChessPieces/figures-results/yolov1.cfg"
+    PATH = "/home/agastya123/PycharmProjects/ComputerVision/ChessPieces/yolov1.cfg"
 
     model = YOLOv1(config_path = PATH, in_channels=3, split_size=7, num_boxes=2, num_classes=20)
-    
     print(model.configurations())
+
+
+
+    
+
+    
+
+
+
     
 
 
