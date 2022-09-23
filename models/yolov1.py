@@ -6,6 +6,7 @@ import torch.nn as nn
 import numpy as np
 torch.manual_seed(0)
 import configparser
+dtype = torch.float32
 
 class YOLOv1(nn.Module):
     """
@@ -33,15 +34,32 @@ class YOLOv1(nn.Module):
         fc_config = []
         
         for sect in self.config.sections():
-            if len(self.config.options(sect)) == 6: 
-                conv_config.append((sect, self.config.options(sect)))
-            elif len(self.config.options(sect)) == 2:
-                pool_config.append((sect, self.config.options(sect)))
-            else: 
-                gen_config.append((sect, self.config.options(sect)))
+            if sect[:4] == "conv":
+                conv_config.append([sect, self.config.options(sect)])
 
-        return gen_config
 
+            elif sect[:4] == "maxp":
+                pool_config.append([sect, self.config.options(sect)])
+
+
+            else:
+                gen_config.append([sect, self.config.options(sect)])
+
+
+        
+        print(f"{len(conv_config)} \n ")
+        
+
+
+
+
+    def convolutional_block(self):
+        pass 
+
+        
+    
+        
+        
 
         
 
@@ -79,7 +97,9 @@ if __name__ == "__main__":
     PATH = "/home/agastya123/PycharmProjects/ComputerVision/ChessPieces/yolov1.cfg"
 
     model = YOLOv1(config_path = PATH, in_channels=3, split_size=7, num_boxes=2, num_classes=20)
-    print(model.configurations())
+    
+    model.configurations()
+
 
 
 
