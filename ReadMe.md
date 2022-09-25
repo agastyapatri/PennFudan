@@ -8,7 +8,15 @@ _This project is intended for me to cut my teeth on object detection algorithms.
 _to detect pedestrians, using the Penn-Fudan pedestrian detection and segmentation dataset_ \[1\]
 
 ## **Introduction**
+The images are taken from scenes around campuses. Each image will have at least one pedestrian in it.
 
+The heights of labeled pedestrians in this database fall into \[180,390 \] pixels. All labeled pedestrians are straight up.
+
+There are 170 images with 345 labeled pedestrians, among which 96 images are taken from around University of Pennsylvania, and other 74 are taken from around Fudan University.
+
+_This description is taken verbatim from \[ 1 \]_
+
+The annotations for the images use the `PASCAL Annotation version 1.00`
 
 ## **Models**
 
