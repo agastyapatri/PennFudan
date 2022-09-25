@@ -20,31 +20,44 @@ class Database(torch.utils.data.Dataset):
         super().__init__()
         self.imgpath = img_PATH
         self.annpath = annot_PATH
+        
+        self.imgs = list(sorted(os.listdir(self.imgpath)))
+        self.annots = list(sorted(os.listdir(self.annpath)))
 
     def __getitem__(self, idx):
 
         """
         Returns the image and annotations at the desired index
         """
-
-        # lists of all images and all annotations 
-        imgs = list(sorted(os.listdir(self.imgpath)))
-        annots = list(sorted(os.listdir(self.annpath)))
+        ann = self.annots[idx]        
+        img = cv2.imread(os.path.join(self.imgpath, self.imgs[idx]))
 
         # image is a np array of size HxWxC
-        image = cv2.imread(os.path.join(self.imgpath, imgs[idx]))
+        image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        num_objects = []
+
+        return image, ann  
+
+
+
+    def annotations(self, idx):
+        ann = self.__getitem__(idx)
+
+        file = open(os.path.join(self.annpath, ann)) 
+        lines = file.readlines()
+        file.close()
         
-        return annots[idx]
-
-
-
-
-
+        imp_lines = [] 
+        for line in lines:
+            if line[0] != "#":
+                imp_lines.append(line)
         
+        annotations = [(line.split(":")[0], line.split(":")[1]) for line in imp_lines if len(line.split(":"))==2 ]
 
-    def loadoneimage(self):
-        pass 
-        
+        return annotations            
+            
+
 
 
     def __len__(self):
@@ -63,6 +76,8 @@ if __name__ == "__main__":
         )
 
     print(dataset[0])
+    # print(dataset.annotations(idx=0))
+    
     
 
     
