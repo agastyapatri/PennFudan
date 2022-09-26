@@ -19,7 +19,9 @@ _This description is taken verbatim from \[ 1 \]_
 The annotations for the images use the `PASCAL Annotation version 1.00`
 
 ## **Models**
+_This section details the different models that are  built + trained_
 
+* **YOLOv1** 
 
 ## **Modus Operandi**
 

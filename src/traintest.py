@@ -1,2 +1,4 @@
 import torch 
-print(torch.__version__)
+torch.manual_seed(0)
+import numpy as np 
+

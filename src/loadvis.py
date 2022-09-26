@@ -34,21 +34,21 @@ class Database(torch.utils.data.Dataset):
     def __getitem__(self, idx):
 
         """
-        Returns the image and annotations at the desired index
+        Returns the 
         """
         ann = self.annots[idx]        
         img = cv2.imread(os.path.join(self.imgpath, self.imgs[idx]))
 
-        # Images: H x W x C
-        image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32)
+        # Images: W x H x C
+        image = torch.tensor(cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32))
         width, height = image.shape[0], image.shape[1]        
 
         # Annotations
         file = open(os.path.join(self.annpath, ann)) 
         lines = file.readlines()
         file.close()
-        imp_lines = [] 
-        annotations = [] 
+
+        targets = [] 
 
         for line in lines:
             if line[0] != "#" and line != "\n":
@@ -61,12 +61,14 @@ class Database(torch.utils.data.Dataset):
                         "max" : item[1]
                         }
 
-                    annotations.append((prop, ann))            
+                    targets.append((prop, ann))            
         
-        annotations = dict(annotations)        
-        return image, (height, width), annotations  
+        targets = dict(targets)        
+        return image, (height, width), targets  
 
 
+    def __len__(self):
+        return len(self.imgs)
 
 if __name__ == "__main__":
     dataset = Database(
@@ -74,4 +76,4 @@ if __name__ == "__main__":
         annot_PATH="/home/agastya123/PycharmProjects/ComputerVision/datasets/PennFudanPed/Annotation/"
         )
 
-    print(dataset[0])
+    # print(dataset[5][2]["Bounding box for object 2 \"PASpersonWalking\" (Xmin, Ymin) - (Xmax, Ymax) "]["min"])
