@@ -27,9 +27,10 @@ class YOLOv1(nn.Module):
     def configurations(self):
         """
         Method to load and sort the configuratins in self.config
+        :return net_config: the configurations for the network/ training architecture
+        :return conv_config: the configs for the conv layers 
         """
-        conv_config = {}
-        pool_config = {} 
+        conv_config = {} 
         net_config = {}
         fc_config = []
         
@@ -49,7 +50,7 @@ class YOLOv1(nn.Module):
 
             # populating the configurations for the maxpool layers
             elif sect[:4] == "maxp":
-                pool_config[sect] =  {
+                conv_config[sect] =  {
                     "size" : self.config.get(section=sect, option="size"), 
                     "stride": self.config.get(section=sect, option="stride"),
                     }
@@ -60,28 +61,35 @@ class YOLOv1(nn.Module):
                 for option in self.config.options(sect):
                     net_config[option] = self.config.get(section=sect, option=option)
                 
+        return net_config, conv_config
         
-        return net_config
-        
 
-
-
-
-    def create_conv_layer(self):
-        configs = self.configurations()
-
-
-    def create_layers(self):
-        """Method to create convolutional layers from the configs"""
-        pass 
 
 
     def network(self):
-        """
-        Method to actually define the YOLO network.
-        """
-        pass
+        conv_configs = self.configurations()[1]
+        yolo = nn.Sequential()
 
+        for i in range(len(conv_configs)):
+            layer = list(conv_configs.keys())[i]
+
+            if layer[:4] == "conv":
+                out_filters = list(conv_configs[layer].values())[1]
+                kernel = list(conv_configs[layer].values())[2]
+                stride = list(conv_configs[layer].values())[3]
+                pad = list(conv_configs[layer].values())[4]
+ 
+
+            # if i == 0:
+            #     conv_block = nn.Sequential(
+            #         nn.Conv2d(in_channels=3, out_channels=64, kernel_size=kernel_size, stride=stride, padding=1, dtype=torch.float32),
+            #         nn.BatchNorm2d(num_features=1),
+            #         nn.LeakyReLU(),
+            #         )
+            #     yolo.append(conv_block)
+
+
+        return 0
 
 
 
@@ -106,7 +114,8 @@ if __name__ == "__main__":
 
     model = YOLOv1(config_path = PATH, in_channels=3, split_size=7, num_boxes=2, num_classes=20)
     
-    print(model.configurations())
+    yolo = model.network()
+    print(yolo)
 
 
 
