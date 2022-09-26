@@ -2,7 +2,6 @@
     Defining a dataset class that will wrap around the images and annotations 
 
     The reference scripts for training object detection, instance segmentation and keypoint detectoin allows for easily supporting adding new custom datasets. 
-
 """
 
 import torch
@@ -16,6 +15,9 @@ torch.manual_seed(0)
 
 
 class Database(torch.utils.data.Dataset):
+    """
+    :returns tuple: image tensor, dimension tuple, BB_Coordinates 
+    """
     def __init__(self, img_PATH, annot_PATH):
         super().__init__()
         self.imgpath = img_PATH
@@ -51,23 +53,18 @@ class Database(torch.utils.data.Dataset):
         for line in lines:
             if line[0] != "#" and line != "\n":
                 prop, item = line.split(":")
-                
                 if prop[0] == "B":
-                    annotations.append((prop, item[:-1]))            
-                
-        annotations = dict(annotations)
+                    item = item[:-1].split(" - ")
+
+                    ann = {
+                        "min" : item[0].split(" ", maxsplit=1)[1],
+                        "max" : item[1]
+                        }
+
+                    annotations.append((prop, ann))            
         
-        return image, (width, height), annotations 
-        
-
-
-
-    def __len__(self):
-        pass 
-
-    def data(self):
-        pass 
-
+        annotations = dict(annotations)        
+        return image, (height, width), annotations  
 
 
 
