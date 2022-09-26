@@ -24,6 +24,11 @@ class Database(torch.utils.data.Dataset):
         self.imgs = list(sorted(os.listdir(self.imgpath)))
         self.annots = list(sorted(os.listdir(self.annpath)))
 
+        self.classes = {
+            0 : "Background",
+            1 : "PASpersonWalking"
+        }
+
     def __getitem__(self, idx):
 
         """
@@ -32,31 +37,28 @@ class Database(torch.utils.data.Dataset):
         ann = self.annots[idx]        
         img = cv2.imread(os.path.join(self.imgpath, self.imgs[idx]))
 
-        # image is a np array of size HxWxC
-        image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # Images: H x W x C
+        image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32)
+        width, height = image.shape[0], image.shape[1]        
 
-        num_objects = []
-
-        return image, ann  
-
-
-
-    def annotations(self, idx):
-        ann = self.__getitem__(idx)
-
+        # Annotations
         file = open(os.path.join(self.annpath, ann)) 
         lines = file.readlines()
         file.close()
-        
         imp_lines = [] 
-        for line in lines:
-            if line[0] != "#":
-                imp_lines.append(line)
-        
-        annotations = [(line.split(":")[0], line.split(":")[1]) for line in imp_lines if len(line.split(":"))==2 ]
+        annotations = [] 
 
-        return annotations            
-            
+        for line in lines:
+            if line[0] != "#" and line != "\n":
+                prop, item = line.split(":")
+                
+                if prop[0] == "B":
+                    annotations.append((prop, item[:-1]))            
+                
+        annotations = dict(annotations)
+        
+        return image, (width, height), annotations 
+        
 
 
 
@@ -76,8 +78,3 @@ if __name__ == "__main__":
         )
 
     print(dataset[0])
-    # print(dataset.annotations(idx=0))
-    
-    
-
-    
