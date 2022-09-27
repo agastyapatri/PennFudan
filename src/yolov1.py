@@ -66,43 +66,39 @@ class YOLOv1(nn.Module):
 
 
 
-    def network(self):
+    def CONV(self):
         conv_configs = self.configurations()[1]
-        yolo = nn.Sequential()
+        yolo_conv = nn.Sequential()
 
         for i in range(len(conv_configs)):
             layer = list(conv_configs.keys())[i]
 
             if layer[:4] == "conv":
-                out_filters = list(conv_configs[layer].values())[1]
-                kernel = list(conv_configs[layer].values())[2]
-                stride = list(conv_configs[layer].values())[3]
-                pad = list(conv_configs[layer].values())[4]
- 
+                    
+                out_filters = int(conv_configs[layer]["filters"])
+                kernel = int(conv_configs[layer]["size"])
+                stride = int(conv_configs[layer]["stride"])
+                pad = int(conv_configs[layer]["pad"])
 
-            # if i == 0:
-            #     conv_block = nn.Sequential(
-            #         nn.Conv2d(in_channels=3, out_channels=64, kernel_size=kernel_size, stride=stride, padding=1, dtype=torch.float32),
-            #         nn.BatchNorm2d(num_features=1),
-            #         nn.LeakyReLU(),
-            #         )
-            #     yolo.append(conv_block)
+                if i == 0:              
+                    yolo_conv.append(nn.Conv2d(in_channels=3, out_channels=out_filters, kernel_size=kernel, stride=stride, padding=pad, dtype=dtype))
+                    yolo_conv.append(nn.BatchNorm2d(num_features=1))
+                    yolo_conv.append(nn.LeakyReLU())
+                    next_in_filters = out_filters
 
+                else: 
+                    yolo_conv.append(nn.Conv2d(in_channels=next_in_filters, out_channels=out_filters, kernel_size=kernel, stride=stride, padding=pad, dtype=dtype))
+                    yolo_conv.append(nn.BatchNorm2d(num_features=1))
+                    yolo_conv.append(nn.LeakyReLU())
+                    next_in_filters = out_filters
 
-        return 0
+            if layer[:4] == "maxp":
+                size = conv_configs[layer]["size"]
+                stride = conv_configs[layer]["stride"]
 
+                yolo_conv.append(nn.MaxPool2d(kernel_size=size, stride=stride))
 
-
-        
-
-
-        
-
-        
-        
-
-
-
+        return yolo_conv
 
 
 
@@ -114,8 +110,12 @@ if __name__ == "__main__":
 
     model = YOLOv1(config_path = PATH, in_channels=3, split_size=7, num_boxes=2, num_classes=20)
     
-    yolo = model.network()
-    print(yolo)
+    yolo_conv = model.CONV()
+    print(yolo_conv)
+    
+    
+    
+
 
 
 
