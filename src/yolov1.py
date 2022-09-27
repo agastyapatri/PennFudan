@@ -64,8 +64,6 @@ class YOLOv1(nn.Module):
         return net_config, conv_config
         
 
-
-
     def CONV(self):
         conv_configs = self.configurations()[1]
         yolo_conv = nn.Sequential()
@@ -81,15 +79,21 @@ class YOLOv1(nn.Module):
                 pad = int(conv_configs[layer]["pad"])
 
                 if i == 0:              
-                    yolo_conv.append(nn.Conv2d(in_channels=3, out_channels=out_filters, kernel_size=kernel, stride=stride, padding=pad, dtype=dtype))
-                    yolo_conv.append(nn.BatchNorm2d(num_features=1))
-                    yolo_conv.append(nn.LeakyReLU())
+                    conv_block = nn.Sequential(
+                        nn.Conv2d(in_channels=3, out_channels=out_filters, kernel_size=kernel, stride=stride, padding=pad, dtype=dtype), 
+                        nn.BatchNorm2d(num_features=1),
+                        nn.LeakyReLU(),
+                    )
+                    yolo_conv.append(conv_block)    
                     next_in_filters = out_filters
 
                 else: 
-                    yolo_conv.append(nn.Conv2d(in_channels=next_in_filters, out_channels=out_filters, kernel_size=kernel, stride=stride, padding=pad, dtype=dtype))
-                    yolo_conv.append(nn.BatchNorm2d(num_features=1))
-                    yolo_conv.append(nn.LeakyReLU())
+                    conv_block = nn.Sequential(
+                        nn.Conv2d(in_channels=next_in_filters, out_channels=out_filters, kernel_size=kernel, stride=stride, padding=pad, dtype=dtype), 
+                        nn.BatchNorm2d(num_features=1),
+                        nn.LeakyReLU(),
+                    )
+                    yolo_conv.append(conv_block)
                     next_in_filters = out_filters
 
             if layer[:4] == "maxp":
