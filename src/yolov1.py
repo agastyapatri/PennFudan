@@ -26,13 +26,11 @@ class YOLOv1(nn.Module):
 
     def configurations(self):
         """
-        Method to load and sort the configuratins in self.config
-        :return net_config: the configurations for the network/ training architecture
-        :return conv_config: the configs for the conv layers 
+            Redmon et al. configurations for the network, convolutions, classification, detection.
         """
         conv_config = {} 
         net_config = {}
-        fc_config = []
+        conn_config = {}
         
 
         for sect in self.config.sections():
@@ -60,11 +58,19 @@ class YOLOv1(nn.Module):
             elif sect[:3] == "net":
                 for option in self.config.options(sect):
                     net_config[option] = self.config.get(section=sect, option=option)
-                
-        return net_config, conv_config
+
+            elif sect[:4] == "conn" or sect[:4] == "dete":
+                for option in self.config.options(sect):
+                    conn_config[option] = self.config.get(section=sect, option=option)
+                    
+
+        return net_config, conv_config, conn_config
         
 
     def CONV(self):
+        """
+            Defining the convolutional part of YOLOv1
+        """
         conv_configs = self.configurations()[1]
         yolo_conv = nn.Sequential()
 
@@ -80,8 +86,8 @@ class YOLOv1(nn.Module):
 
                 if i == 0:              
                     conv_block = nn.Sequential(
-                        nn.Conv2d(in_channels=3, out_channels=out_filters, kernel_size=kernel, stride=stride, padding=pad, dtype=dtype), 
-                        nn.BatchNorm2d(num_features=1),
+                        nn.Conv2d(in_channels=3, out_channels=out_filters, kernel_size=self.S, stride=stride, padding=pad, bias=False, dtype=dtype), 
+                        nn.BatchNorm2d(num_features=out_filters),
                         nn.LeakyReLU(),
                     )
                     yolo_conv.append(conv_block)    
@@ -90,33 +96,58 @@ class YOLOv1(nn.Module):
                 else: 
                     conv_block = nn.Sequential(
                         nn.Conv2d(in_channels=next_in_filters, out_channels=out_filters, kernel_size=kernel, stride=stride, padding=pad, dtype=dtype), 
-                        nn.BatchNorm2d(num_features=1),
+                        nn.BatchNorm2d(num_features=out_filters),
                         nn.LeakyReLU(),
                     )
                     yolo_conv.append(conv_block)
                     next_in_filters = out_filters
 
             if layer[:4] == "maxp":
-                size = conv_configs[layer]["size"]
-                stride = conv_configs[layer]["stride"]
+                size = int(conv_configs[layer]["size"])
+                stride = int(conv_configs[layer]["stride"])
 
                 yolo_conv.append(nn.MaxPool2d(kernel_size=size, stride=stride))
 
         return yolo_conv
 
 
+    def CONNECTED(self):
+        """
+            Defining the connected part of YOLOv1 
+        """
+        FC = nn.Sequential(
+            nn.Linear(in_features=1024*self.S*self.S, out_features=4096, dtype=torch.float32),
+            nn.Dropout(0.0),
+            nn.LeakyReLU(),
+            nn.Linear(in_features=4096, out_features = self.S*self.S*(self.C + 5*self.B))
+        )
+        return FC 
+
+    def network(self):
+        yolo = nn.Sequential(
+            self.CONV(),
+            nn.Flatten(start_dim=1, end_dim=-1),
+            self.CONNECTED()
+        )
+        return yolo 
+
+
 
 if __name__ == "__main__":
-    """
-    Redmon et al. configs
-    """
+    testdata = torch.randn(size=(1, 3, 448, 448), dtype=torch.float32)
     PATH = "/home/agastya123/PycharmProjects/ComputerVision/PennFudan/yolov1.cfg"
 
-    model = YOLOv1(config_path = PATH, in_channels=3, split_size=7, num_boxes=2, num_classes=20)
-    
-    yolo_conv = model.CONV()
-    print(yolo_conv)
-    
+    YOLO = YOLOv1(config_path = PATH, in_channels=3, split_size=7, num_boxes=2, num_classes=20)
+
+    CONV = YOLO.CONV()
+    FC = YOLO.CONNECTED()
+    net = YOLO.network()    
+
+    print(CONV[:2])
+
+
+
+
     
     
 
