@@ -17,6 +17,9 @@ torch.manual_seed(0)
 class Database(torch.utils.data.Dataset):
     """
     :returns tuple: image tensor, dimension tuple, BB_Coordinates 
+    dataset[idx1][0]: returns the image tensor of the idx1 image
+    dataset[idx][1]: returns the (H x W) tuple of the idx1 image
+    dataset[idx1][2]: returns the annotations of the idx1 image
     """
     def __init__(self, img_PATH, annot_PATH):
         super().__init__()
@@ -30,6 +33,7 @@ class Database(torch.utils.data.Dataset):
             0 : "Background",
             1 : "PASpersonWalking"
         }
+
 
     def __getitem__(self, idx):
 
@@ -49,18 +53,28 @@ class Database(torch.utils.data.Dataset):
         file.close()
 
         targets = [] 
-
+        
+        # Creating the target dictionary. targets is (x_min, y_min), (x_max, y_max) 
+        j = 0
+        
+        # convert_to_tuple = lambda s: list(s)[]
+        
         for line in lines:
             if line[0] != "#" and line != "\n":
                 prop, item = line.split(":")
                 if prop[0] == "B":
                     item = item[:-1].split(" - ")
+                    min_coords = item[0].split(" ", maxsplit=1)[1]
+                    max_coords = item[1]
 
                     ann = {
-                        "min" : item[0].split(" ", maxsplit=1)[1],
-                        "max" : item[1]
-                        }
-
+                        "x_min" : int("".join(list(min_coords)[1:4])),
+                        "y_min" : int("".join(list(min_coords)[6:-1])),
+                        "x_max" : int("".join(list(max_coords)[1:4])),
+                        "y_max" : int("".join(list(min_coords)[6:-1])),
+                    }
+                    prop = f"BB_{j}"
+                    j+=1
                     targets.append((prop, ann))            
         
         targets = dict(targets)        

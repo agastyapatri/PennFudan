@@ -15,10 +15,13 @@ path_to_annotations = "/home/agastya123/PycharmProjects/ComputerVision/datasets/
 path_to_yolo_configs = "/home/agastya123/PycharmProjects/ComputerVision/ChessPieces/yolov1.cfg"
 
 # Dataset is a tuple of images, target BB coordinates and image dimensions   
+
+
 dataset = Database(
         img_PATH = path_to_images,
         annot_PATH = path_to_annotations
         )
 
+print(dataset[60][2])
 
 
