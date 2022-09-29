@@ -22,6 +22,14 @@ The annotations for the images use the `PASCAL Annotation version 1.00`
 _This section details the different models that are  built + trained_
 
 * **YOLOv1** 
+  The labels for YOLO take the form :
+    $$ label_{cell} = [\{c_n\}, p_{c}, x,y, w, h]$$
+    Where n is the number of classes, $p_c$ is the probability that there is an object $\{x, y, w, h\}$ are the dimensions of the bounding boxes.
+
+    The target shape of the output for one image is $(S, S, 7)$
+    prediction shape for one image is $(S, S, )$
+
+
 
 ## **Modus Operandi**
 

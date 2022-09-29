@@ -14,17 +14,20 @@ path_to_images = "/home/agastya123/PycharmProjects/ComputerVision/datasets/PennF
 path_to_annotations = "/home/agastya123/PycharmProjects/ComputerVision/datasets/PennFudanPed/Annotation/" 
 path_to_yolo_configs = "/home/agastya123/PycharmProjects/ComputerVision/PennFudan/yolov1.cfg"
 
+testdata = torch.randn(size=(1, 3, 448, 448), dtype=torch.float32)
+
 # Dataset is a tuple of images, image dimensions and target BB coordinates    
 dataset = Database(
         img_PATH = path_to_images,
         annot_PATH = path_to_annotations
         )
 
-
-
 # model used is YOLOv1 as defined by Redmon et al. 2 classes, as PennFudan has background = 0, and pedestrian = 1. 
 YOLO = YOLOv1(config_path=path_to_yolo_configs, in_channels=3, split_size=7, num_boxes=2, num_classes=2)
 
-print(dataset[45][2])
+network = YOLO.network()
+CONV = YOLO.CONV()
+CONN = YOLO.CONNECTED()
 
 
+print(network(testdata).shape)

@@ -97,7 +97,7 @@ class YOLOv1(nn.Module):
 
                 if i == 0:              
                     conv_block = nn.Sequential(
-                        nn.Conv2d(in_channels=3, out_channels=out_filters, kernel_size=self.S, stride=stride, padding=pad, bias=False, dtype=dtype), 
+                        nn.Conv2d(in_channels=3, out_channels=out_filters, kernel_size=kernel, stride=stride, padding=3, bias=False, dtype=dtype), 
                         nn.BatchNorm2d(num_features=out_filters),
                         nn.LeakyReLU(),
                     )
