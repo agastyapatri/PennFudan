@@ -24,6 +24,17 @@ class YOLOv1(nn.Module):
         self.config = configparser.ConfigParser()
         self.config.read(self.PATH)
 
+
+    def __getitem__(self, idx):
+        
+        pass 
+
+    def __str__(self):
+
+        params = f"\nYOLOv1 Object Detection.\n-------------------------\nSplit Size: {self.S}\nNumber of Boxes: {self.B}\nNumber of Classes: {self.C}\n"
+        return params 
+    
+
     def configurations(self):
         """
             Redmon et al. configurations for the network, convolutions, classification, detection.
@@ -143,7 +154,7 @@ if __name__ == "__main__":
     FC = YOLO.CONNECTED()
     net = YOLO.network()    
 
-    print(CONV[:2])
+    print(CONV)
 
 
 

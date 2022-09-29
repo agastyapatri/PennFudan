@@ -68,10 +68,10 @@ class Database(torch.utils.data.Dataset):
                     max_coords = item[1]
 
                     ann = {
-                        "x_min" : int("".join(list(min_coords)[1:4])),
-                        "y_min" : int("".join(list(min_coords)[6:-1])),
-                        "x_max" : int("".join(list(max_coords)[1:4])),
-                        "y_max" : int("".join(list(min_coords)[6:-1])),
+                        "x_min" : int(min_coords.split(", ")[0][1:]),
+                        "y_min" : int(min_coords.split(", ")[1][0:-1]),
+                        "x_max" : int(max_coords.split(", ")[0][1:]),
+                        "y_max" : int(max_coords.split(", ")[1][0:-1])
                     }
                     prop = f"BB_{j}"
                     j+=1
