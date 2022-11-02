@@ -123,18 +123,8 @@ class YOLOv1(nn.Module):
                 # Maxpool layer configs
                 darknet.append(nn.MaxPool2d(kernel_size=2, stride=2))
 
-
         return darknet
 
-
-
-                
-
-            
-
-        
-        
-        # return conv_configs
 
 
     def CONNECTED(self):
@@ -171,7 +161,9 @@ if __name__ == "__main__":
     
     darknet = YOLO.network()
 
-    print(darknet(testdata).shape)
+    
+
+
 
 
 

@@ -9,7 +9,6 @@ import torch.nn as nn
 import matplotlib.pyplot as plt 
 import numpy as np 
 from PIL import Image 
-import cv2 
 import os
 torch.manual_seed(0)
 
@@ -34,17 +33,21 @@ class Database(torch.utils.data.Dataset):
             1 : "PASpersonWalking"
         }
 
+    def __str__(self):
+        return f"PennFudan dataset with {len(self.imgs)} images."
 
     def __getitem__(self, idx):
 
         """
-        Returns the 
+        :return image: a torch tensor representation of the image
+        :return (H, W): the dimensions of the image
+        :return targets: a dictionary containing the coordinates of the bounding boxes.
         """
         ann = self.annots[idx]        
-        img = cv2.imread(os.path.join(self.imgpath, self.imgs[idx]))
+        img = plt.imread(os.path.join(self.imgpath, self.imgs[idx]))
 
         # Images: W x H x C
-        image = torch.tensor(cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32))
+        image = torch.tensor(img.astype(np.float32))
         width, height = image.shape[0], image.shape[1]        
 
         # Annotations
@@ -86,8 +89,8 @@ class Database(torch.utils.data.Dataset):
 
 if __name__ == "__main__":
     dataset = Database(
-        img_PATH="/home/agastya123/PycharmProjects/ComputerVision/datasets/PennFudanPed/PNGImages/", 
-        annot_PATH="/home/agastya123/PycharmProjects/ComputerVision/datasets/PennFudanPed/Annotation/"
+        img_PATH="/home/agastyapatri/Projects/ComputerVision/datasets/PennFudanPed/PNGImages/", 
+        annot_PATH="/home/agastyapatri/Projects/ComputerVision/datasets/PennFudanPed/Annotation/"
         )
 
-    # print(dataset[5][2]["Bounding box for object 2 \"PASpersonWalking\" (Xmin, Ymin) - (Xmax, Ymax) "]["min"])
+    print(dataset[0])

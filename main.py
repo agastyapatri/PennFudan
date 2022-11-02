@@ -1,18 +1,16 @@
 import torch 
-# import cv2 
 import numpy as np 
 from torchvision.models import detection 
-import pickle
 from src.loadvis import Database
-from src.yolov1 import YOLOv1
+from models.yolov1 import YOLOv1
 from src.utils import Utilities
 
 
 
 # Defining path variables for configs and data. 
-path_to_images = "/home/agastya123/PycharmProjects/ComputerVision/datasets/PennFudanPed/PNGImages/"
-path_to_annotations = "/home/agastya123/PycharmProjects/ComputerVision/datasets/PennFudanPed/Annotation/" 
-path_to_yolo_configs = "/home/agastya123/PycharmProjects/ComputerVision/PennFudan/yolov1.cfg"
+path_to_images = "/home/agastyapatri/Projects/ComputerVision/datasets/PennFudanPed/PNGImages/"
+path_to_annotations = "/home/agastyapatri/Projects/ComputerVision/datasets/PennFudanPed/Annotation/" 
+path_to_yolo_configs = "/home/agastyapatri/Projects/ComputerVision/PennFudan/yolov1.cfg"
 
 testdata = torch.randn(size=(1, 3, 448, 448), dtype=torch.float32)
 
@@ -26,8 +24,5 @@ dataset = Database(
 YOLO = YOLOv1(config_path=path_to_yolo_configs, in_channels=3, split_size=7, num_boxes=2, num_classes=2)
 
 network = YOLO.network()
-CONV = YOLO.CONV()
-CONN = YOLO.CONNECTED()
 
-
-print(CONV[:1])
+print(network)
