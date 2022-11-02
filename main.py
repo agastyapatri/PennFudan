@@ -1,5 +1,5 @@
 import torch 
-import cv2 
+# import cv2 
 import numpy as np 
 from torchvision.models import detection 
 import pickle
@@ -30,4 +30,4 @@ CONV = YOLO.CONV()
 CONN = YOLO.CONNECTED()
 
 
-print(network(testdata).shape)
+print(CONV[:1])

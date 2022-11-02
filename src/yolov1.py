@@ -7,6 +7,30 @@ import numpy as np
 torch.manual_seed(0)
 import configparser
 dtype = torch.float32
+import json 
+from collections import OrderedDict
+
+
+class CONV(nn.Module):
+    #   Class Defining a singular convolutional block 
+    def __init__(self, in_channels, out_channels, kernel_size, stride, padding) -> None:
+        super().__init__()
+        self.conv = nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, stride=stride, padding=padding, dtype=dtype)
+        self.batchnorm = nn.BatchNorm2d(num_features=out_channels)
+        self.activation = nn.LeakyReLU(0.1)
+
+    def forward(self, input):
+        block = nn.Sequential(
+            self.conv, 
+            self.batchnorm,
+            self.activation
+        )
+
+        return block(input)
+
+
+
+
 
 class YOLOv1(nn.Module):
     """
@@ -25,9 +49,6 @@ class YOLOv1(nn.Module):
         self.config.read(self.PATH)
 
 
-    def __getitem__(self, idx):
-        
-        pass 
 
     def __str__(self):
 
@@ -74,52 +95,46 @@ class YOLOv1(nn.Module):
                 for option in self.config.options(sect):
                     conn_config[option] = self.config.get(section=sect, option=option)
                     
-
         return net_config, conv_config, conn_config
         
 
-    def CONV(self):
+    def CONVOLUTIONAL(self):
         """
             Defining the convolutional part of YOLOv1
         """
         conv_configs = self.configurations()[1]
-        yolo_conv = nn.Sequential()
+        input_channels = 3
+        darknet = nn.Sequential()
+        in_channels = 3
+        for i in conv_configs:
 
-        for i in range(len(conv_configs)):
-            layer = list(conv_configs.keys())[i]
+            if i[:4] == "conv":
+                # Convolutional layer configs
+                out_channels = int(conv_configs[i]["filters"])
+                size = int(conv_configs[i]["size"])
+                stride = int(conv_configs[i]["stride"])
+                pad = int(conv_configs[i]["pad"])
 
-            if layer[:4] == "conv":
-                    
-                out_filters = int(conv_configs[layer]["filters"])
-                kernel = int(conv_configs[layer]["size"])
-                stride = int(conv_configs[layer]["stride"])
-                pad = int(conv_configs[layer]["pad"])
+                conv_block = CONV(in_channels=in_channels, out_channels=out_channels, kernel_size=size, stride=stride, padding = pad)
+                in_channels = out_channels
+                darknet.append(conv_block)
 
-                if i == 0:              
-                    conv_block = nn.Sequential(
-                        nn.Conv2d(in_channels=3, out_channels=out_filters, kernel_size=kernel, stride=stride, padding=3, bias=False, dtype=dtype), 
-                        nn.BatchNorm2d(num_features=out_filters),
-                        nn.LeakyReLU(),
-                    )
-                    yolo_conv.append(conv_block)    
-                    next_in_filters = out_filters
+            else:
+                # Maxpool layer configs
+                darknet.append(nn.MaxPool2d(kernel_size=2, stride=2))
 
-                else: 
-                    conv_block = nn.Sequential(
-                        nn.Conv2d(in_channels=next_in_filters, out_channels=out_filters, kernel_size=kernel, stride=stride, padding=pad, dtype=dtype), 
-                        nn.BatchNorm2d(num_features=out_filters),
-                        nn.LeakyReLU(),
-                    )
-                    yolo_conv.append(conv_block)
-                    next_in_filters = out_filters
 
-            if layer[:4] == "maxp":
-                size = int(conv_configs[layer]["size"])
-                stride = int(conv_configs[layer]["stride"])
+        return darknet
 
-                yolo_conv.append(nn.MaxPool2d(kernel_size=size, stride=stride))
 
-        return yolo_conv
+
+                
+
+            
+
+        
+        
+        # return conv_configs
 
 
     def CONNECTED(self):
@@ -128,16 +143,17 @@ class YOLOv1(nn.Module):
         """
         FC = nn.Sequential(
             nn.Linear(in_features=1024*self.S*self.S, out_features=4096, dtype=torch.float32),
-            nn.Dropout(0.0),
-            nn.LeakyReLU(),
+            nn.Dropout(0.4),
+            nn.LeakyReLU(0.1),
             nn.Linear(in_features=4096, out_features = self.S*self.S*(self.C + 5*self.B))
         )
+        
         return FC 
 
     def network(self):
         yolo = nn.Sequential(
-            self.CONV(),
-            nn.Flatten(start_dim=1, end_dim=-1),
+            self.CONVOLUTIONAL(),
+            nn.Flatten(),
             self.CONNECTED()
         )
         return yolo 
@@ -146,16 +162,16 @@ class YOLOv1(nn.Module):
 
 if __name__ == "__main__":
     testdata = torch.randn(size=(1, 3, 448, 448), dtype=torch.float32)
-    PATH = "/home/agastya123/PycharmProjects/ComputerVision/PennFudan/yolov1.cfg"
+    PATH = "/home/agastyapatri/Projects/ComputerVision/PennFudan/yolov1.cfg"
 
     YOLO = YOLOv1(config_path = PATH, in_channels=3, split_size=7, num_boxes=2, num_classes=20)
 
-    CONV = YOLO.CONV()
     FC = YOLO.CONNECTED()
-    net = YOLO.network()    
+    CONVLUTIONAL = YOLO.CONVOLUTIONAL()    
+    
+    darknet = YOLO.network()
 
-    print(CONV)
-
+    print(darknet(testdata).shape)
 
 
 

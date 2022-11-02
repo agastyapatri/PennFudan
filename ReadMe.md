@@ -29,14 +29,8 @@ _This section details the different models that are  built + trained_
     The target shape of the output for one image is $(S, S, 7)$
     prediction shape for one image is $(S, S, )$
 
-
-
-## **Modus Operandi**
-
-
-
-## **Results**
-
+##  **Notes**
+1. To make the shapes work, and the output of the network to be [1, 1470], the stride of the 2nd and 3rd convolutional layers were changed from 1 to 2. 
 
 ## **References**
 
